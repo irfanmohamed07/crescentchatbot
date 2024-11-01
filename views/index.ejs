@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chatbot</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="Header">
+        <div class="logo">
+            <img src="/images/logo.jpg" alt="Logo">
+        </div>
+        <!-- <nav class="navbar">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </nav> -->
+        <div id="menu-btn" class="fas fa-bars"></div>
+    </header>
+
+    <div class="container">
+        <h1>Chatbot</h1>
+        <div id="response" class="response-area"></div>
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="user-input" name="userInput" placeholder="Type your message..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Done By</h3>
+                <p>.</p>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <p>Email: crescentnotes53@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        const form = document.getElementById('chat-form');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const userInput = formData.get('userInput');
+
+            // Append user message
+            responseDiv.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+
+            const res = await fetch('/chat', {
+                method: 'POST',
+                body: new URLSearchParams({ userInput }),
+            });
+            const text = await res.text();
+
+            // Check if the response is a URL
+            const urlPattern = /^https?:\/\/[^\s]+$/;
+            if (urlPattern.test(text)) {
+                // If it's a URL, create a clickable link
+                responseDiv.innerHTML += `<p><strong>Chatbot:</strong> <a href="${text}" target="_blank">${text}</a></p>`;
+            } else {
+                // Otherwise, display the text normally
+                responseDiv.innerHTML += `<p><strong>Chatbot:</strong> ${text}</p>`;
+            }
+
+            form.reset();
+            responseDiv.scrollTop = responseDiv.scrollHeight;
+        });
+    </script>
+</body>
+</html>
